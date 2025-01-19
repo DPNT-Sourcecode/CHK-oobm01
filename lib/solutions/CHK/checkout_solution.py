@@ -15,6 +15,9 @@ def checkout(skus: str):
         "B": (2, 45)
     }
     
+    if not isinstance(skus, str) or not all(char in prices for char in skus):
+        return -1
+    
     skus_counts = Counter(skus)
     
     total = 0
@@ -30,4 +33,5 @@ def checkout(skus: str):
     
     
     
+
 
