@@ -29,7 +29,7 @@ def checkout(skus: str):
             skus_counts[char] = 1
     
     total = 0
-    for sku, count in skus_counts.skus():
+    for sku, count in skus_counts.items():
         if sku in special_offers:
             offer_count, offer_price = special_offers[sku]
             total += (count // offer_count) * offer_price
@@ -41,3 +41,4 @@ def checkout(skus: str):
     
     
     
+
