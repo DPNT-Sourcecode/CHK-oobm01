@@ -15,11 +15,17 @@ def checkout(skus: str):
         "B": (2, 45)
     }
     
-    if not isinstance(skus, str) or not all(char in prices for char in skus):
+    if not isinstance(skus, str):
         return -1
+    for char in skus:
+        if char not in prices:
+            return -1
     
-    from collections import Counter
-    skus_counts = Counter(skus)
+    skus_counts = {}
+    for char in skus:
+        skus_counts[char] +=1
+    else:
+        skus_counts[char] = 1
     
     total = 0
     for sku, count in skus_counts.skus():
@@ -34,6 +40,7 @@ def checkout(skus: str):
     
     
     
+
 
 
 
