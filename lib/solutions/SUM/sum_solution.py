@@ -1,7 +1,7 @@
 # noinspection PyShadowingBuiltins,PyUnusedLocal
 def compute(x, y):
     if x and y:
-        if x > 0 and y > 0:
+        if x > -1 and y > -1:
             return x + y
-        else:
-            raise Exception
+    else:
+        raise Exception
