@@ -59,7 +59,7 @@ def checkout(skus: str):
                     skus_counts['B'] = max(0, b - free_b)
                     break # moving to the next item, once special offer for E is applied.
                 else:   
-                    offer_count, offer_price = special_offers[sku]
+                    offer_count, offer_price = offer
                     total += (count // offer_count) * offer_price
                     total += (count % offer_count) * prices[sku]
         else:
@@ -70,4 +70,5 @@ def checkout(skus: str):
     
     
     
+
 
