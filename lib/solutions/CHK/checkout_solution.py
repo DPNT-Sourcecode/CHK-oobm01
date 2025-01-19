@@ -51,7 +51,7 @@ def checkout(skus: str):
         if sku in special_offers:
             # Special offers.
             if sku == "E": # For E
-                free_b = count // 2
+                free_b += count // 2
                 total += (count // 2) * prices["E"]
                 remaining_e = count % 2
                 total += remaining_e * prices["E"]
@@ -75,3 +75,4 @@ def checkout(skus: str):
     
     
     
+
