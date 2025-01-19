@@ -1,4 +1,4 @@
-from collections import Counter
+
 
 # noinspection PyUnusedLocal
 # skus = unicode string
@@ -18,6 +18,7 @@ def checkout(skus: str):
     if not isinstance(skus, str) or not all(char in prices for char in skus):
         return -1
     
+    from collections import Counter
     skus_counts = Counter(skus)
     
     total = 0
@@ -33,5 +34,6 @@ def checkout(skus: str):
     
     
     
+
 
 
