@@ -23,9 +23,10 @@ def checkout(skus: str):
     
     skus_counts = {}
     for char in skus:
-        skus_counts[char] +=1
-    else:
-        skus_counts[char] = 1
+        if char in skus_counts:
+            skus_counts[char] +=1
+        else:
+            skus_counts[char] = 1
     
     total = 0
     for sku, count in skus_counts.skus():
@@ -40,7 +41,3 @@ def checkout(skus: str):
     
     
     
-
-
-
-
