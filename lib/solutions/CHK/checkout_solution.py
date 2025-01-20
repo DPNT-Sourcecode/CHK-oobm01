@@ -71,7 +71,7 @@ def checkout(items):
                     best_price = min(best_price, num_groups * offer_price + remainder * item_price)
                     
             if offer_best_price:
-                best_price = offer_best_price
+                best_price = offer_best_price + remainder * item_price
         
         # Add the best price for the item to the total cost
         total_cost += best_price
