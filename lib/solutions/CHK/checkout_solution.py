@@ -51,6 +51,7 @@ def checkout(items):
             # Sort offers by quantity in descending order
             sorted_offers = sorted(offers[item], reverse=True, key=lambda x: x[0])
             
+            # Apply largest offer first
             for offer in sorted_offers:
                 offer_count, offer_price = offer[:2]
                 
@@ -71,3 +72,4 @@ def checkout(items):
         total_cost += best_price
     
     return total_cost
+
