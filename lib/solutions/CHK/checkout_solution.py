@@ -48,8 +48,10 @@ def checkout(items):
         
         # Check for special offers
         if item in offers:
-            # Sort offers from highest quantity to lowest quantity
-            for offer in sorted(offers[item], reverse=True, key=lambda x: x[0]):
+            # Sort offers by quantity in descending order
+            sorted_offers = sorted(offers[item], reverse=True, key=lambda x: x[0])
+            
+            for offer in sorted_offers:
                 offer_count, offer_price = offer[:2]
                 
                 if len(offer) == 2:  # Simple offer (e.g., 3A for 130)
