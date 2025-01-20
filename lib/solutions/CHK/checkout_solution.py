@@ -43,6 +43,10 @@ def checkout(skus: str) -> int:
         else:
             return -1  # Illegal SKU
 
+    # Handle single items like 'A' directly
+    if len(skus) == 1:
+        return prices[skus]
+
     total = 0
 
     # Apply "2E gets 1B free" offer
@@ -103,4 +107,3 @@ def checkout(skus: str) -> int:
         total += count * prices[item]
 
     return total
-
