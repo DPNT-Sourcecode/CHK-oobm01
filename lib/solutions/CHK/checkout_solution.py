@@ -59,8 +59,11 @@ def checkout(skus: str):
             else:
                 for offer in sorted(special_offers[sku], key=lambda x: x[1], reverse=True):
                     offer_count, offer_price = offer
-                    total += (count // offer_count) * offer_price
-                    total += (count % offer_count) * prices[sku]
+                    
+                    if count>=offer_count:
+                        total += (count // offer_count) * offer_price
+                        count = count % offer_count
+                total += (count % offer_count) * prices[sku]
         else:
             # No special offers.
             total += count * prices[sku]
