@@ -22,6 +22,9 @@ def checkout(items):
         'R': [(3, 50, 'Q')],        # 3R get one Q free
         'S': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
         'T': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
+        'U': [(3, 120)],            # 3U for 120
+        'V': [(2, 90), (3, 130)],   # 2V for 90, 3V for 130
+        'W': [(3, 45)],             # 3W for 45
         'X': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
         'Y': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
         'Z': [(3, 45)]              # buy any 3 of (S,T,X,Y,Z) for 45
