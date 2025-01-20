@@ -7,7 +7,7 @@ def checkout(skus: str) -> int:
         'P': 50, 'Q': 30, 'R': 50, 'S': 20, 'T': 20,
         'U': 40, 'V': 50, 'W': 20, 'X': 17, 'Y': 20, 'Z': 21,
     }
-    
+
     # Special offers table
     offers = {
         'A': [(3, 130), (5, 200)],
@@ -76,10 +76,9 @@ def checkout(skus: str) -> int:
             # Handle multiple offers for the item
             if item == 'A':  # For A, we need to pick the best offer
                 offer_prices = offers[item]
-                best_price = float('inf')
+                best_price = count * prices[item]  # No offer price by default
                 for offer in offer_prices:
                     if isinstance(offer[1], int):  # Multi-buy offers
-                        # For each offer, calculate the price
                         sets = count // offer[0]
                         remaining = count % offer[0]
                         price = sets * offer[1] + remaining * prices[item]
@@ -104,3 +103,4 @@ def checkout(skus: str) -> int:
         total += count * prices[item]
 
     return total
+
