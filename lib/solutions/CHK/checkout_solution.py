@@ -1,93 +1,65 @@
-def checkout(skus: str) -> int:
-    # Price table for each item
-    prices = {
-        'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40,
-        'F': 10, 'G': 20, 'H': 10, 'I': 35, 'J': 60,
-        'K': 70, 'L': 90, 'M': 15, 'N': 40, 'O': 10,
-        'P': 50, 'Q': 30, 'R': 50, 'S': 20, 'T': 20,
-        'U': 40, 'V': 50, 'W': 20, 'X': 17, 'Y': 20, 'Z': 21,
-    }
+from collections import Counter
 
-    # Special offers table
+def checkout(items):
+    # Define prices and special offers
+    prices = {
+        'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40, 'F': 10, 'G': 20,
+        'H': 10, 'I': 35, 'J': 60, 'K': 70, 'L': 90, 'M': 15, 'N': 40,
+        'O': 10, 'P': 50, 'Q': 30, 'R': 50, 'S': 20, 'T': 20, 'U': 40,
+        'V': 50, 'W': 20, 'X': 17, 'Y': 20, 'Z': 21
+    }
+    
     offers = {
         'A': [(3, 130), (5, 200)],  # 3A for 130, 5A for 200
-        'B': [(2, 45)],  # 2B for 45
-        'H': [(5, 45), (10, 80)],  # 5H for 45, 10H for 80
-        'K': [(2, 120)],  # 2K for 120
-        'P': [(5, 200)],  # 5P for 200
-        'Q': [(3, 80)],  # 3Q for 80
-        'V': [(3, 130), (2, 90)],  # 3V for 130, 2V for 90
-        'E': [(2, 'B')],  # 2E get 1B free
-        'N': [(3, 'M')],  # 3N get 1M free
-        'R': [(3, 'Q')],  # 3R get 1Q free
-        'U': [(3, 'U')],  # 3U get 1U free
-        'F': [(2, 'F')],  # 2F get 1F free
+        'B': [(2, 45)],             # 2B for 45
+        'E': [(2, 40, 'B')],        # 2E get one B free
+        'F': [(2, 10, 'F')],        # 2F get one F free
+        'H': [(5, 45), (10, 80)],   # 5H for 45, 10H for 80
+        'K': [(2, 120)],            # 2K for 120
+        'N': [(3, 40, 'M')],        # 3N get one M free
+        'P': [(5, 200)],            # 5P for 200
+        'Q': [(3, 80)],             # 3Q for 80
+        'R': [(3, 50, 'Q')],        # 3R get one Q free
+        'S': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
+        'T': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
+        'X': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
+        'Y': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
+        'Z': [(3, 45)]              # buy any 3 of (S,T,X,Y,Z) for 45
     }
-
-    # Group discount items (S, T, X, Y, Z) for 45 each group of 3
-    group_discount_items = {'S', 'T', 'X', 'Y', 'Z'}
-    group_discount_price = 45
-
-    # Check for invalid input
-    if not isinstance(skus, str) or any(char not in prices for char in skus):
+    
+    # Check for invalid characters
+    if not all(c.isupper() and c.isalpha() for c in items):
         return -1
-
-    # Initialize item counts dictionary
-    item_counts = {}
-    for item in skus:
-        if item in prices:
-            item_counts[item] = item_counts.get(item, 0) + 1
-        else:
-            return -1  # Illegal SKU
-
-    total = 0
-
-    # Handle group discount for S, T, X, Y, Z
-    group_items = {item: item_counts.get(item, 0) for item in group_discount_items}
-    total_group_items = sum(group_items.values())
-
-    # Apply group discount (group of 3 for 45)
-    groups_of_3 = total_group_items // 3
-    total += groups_of_3 * group_discount_price
-
-    # Deduct used items for group discount
-    used_count = groups_of_3 * 3
-    for item in group_items:
-        if used_count == 0:
-            break
-        used = min(group_items[item], used_count)
-        item_counts[item] -= used
-        used_count -= used
-
-    # Apply special offers for each item
+    
+    # Count the items
+    item_counts = Counter(items)
+    total_cost = 0
+    
+    # Process each item
     for item, count in item_counts.items():
-        if count > 0 and item in offers:
-            # Handle multiple offers for the item
-            if item == 'A':  # For A, we need to pick the best offer
-                best_price = count * prices[item]  # No offer price by default
-                for offer in offers[item]:
-                    if isinstance(offer[1], int):  # Multi-buy offers
-                        sets = count // offer[0]
-                        remaining = count % offer[0]
-                        price = sets * offer[1] + remaining * prices[item]
-                        best_price = min(best_price, price)
-                total += best_price
-            else:
-                # Apply other offers (e.g., 2 for price X)
-                for offer in offers[item]:
-                    if isinstance(offer[1], int):  # Multi-buy discount
-                        while count >= offer[0]:
-                            total += offer[1]
-                            count -= offer[0]
-                    elif isinstance(offer[1], str):  # Free item offer (e.g. 2E gets 1B free)
-                        free_item = offer[1]
-                        while count >= offer[0]:
-                            total += offer[0] * prices[item]
-                            count -= offer[0]
-                            if free_item in item_counts and item_counts[free_item] > 0:
-                                item_counts[free_item] = max(0, item_counts[free_item] - 1)
-
-        # Add remaining items at full price
-        total += count * prices[item]
-
-    return total
+        if item not in prices:
+            return -1  # Invalid item
+        
+        item_price = prices[item]
+        best_price = count * item_price  # Default to no offers applied
+        
+        # Check for special offers
+        if item in offers:
+            for offer in offers[item]:
+                if len(offer) == 2:  # Simple offer (e.g., 3A for 130)
+                    offer_count, offer_price = offer
+                    num_groups = count // offer_count
+                    remainder = count % offer_count
+                    best_price = min(best_price, num_groups * offer_price + remainder * item_price)
+                elif len(offer) == 3:  # Complex offer (e.g., 2E get one B free)
+                    offer_count, offer_price, free_item = offer
+                    num_groups = count // offer_count
+                    remainder = count % offer_count
+                    free_item_count = num_groups  # One free item for each group
+                    total_free_item_count = item_counts.get(free_item, 0) + free_item_count
+                    best_price = min(best_price, num_groups * offer_price + remainder * item_price)
+        
+        # Add the best price for the item to the total cost
+        total_cost += best_price
+    
+    return total_cost
