@@ -10,7 +10,7 @@ def checkout(items):
     }
     
     offers = {
-        'A': [(3, 130), (5, 200)],  # 3A for 130, 5A for 200
+        'A': [(5, 200), (3, 130)],  # 5A for 200, 3A for 130
         'B': [(2, 45)],             # 2B for 45
         'E': [(2, 40, 'B')],        # 2E get one B free
         'F': [(2, 10, 'F')],        # 2F get one F free
@@ -45,12 +45,15 @@ def checkout(items):
         
         # Check for special offers
         if item in offers:
-            for offer in offers[item]:
+            # Sort offers from highest quantity to lowest quantity
+            for offer in sorted(offers[item], reverse=True, key=lambda x: x[0]):
+                offer_count, offer_price = offer[:2]
+                
                 if len(offer) == 2:  # Simple offer (e.g., 3A for 130)
-                    offer_count, offer_price = offer
                     num_groups = count // offer_count
                     remainder = count % offer_count
                     best_price = min(best_price, num_groups * offer_price + remainder * item_price)
+                
                 elif len(offer) == 3:  # Complex offer (e.g., 2E get one B free)
                     offer_count, offer_price, free_item = offer
                     num_groups = count // offer_count
