@@ -70,11 +70,15 @@ def checkout(items):
                 
                 elif len(offer) == 3:  # Complex offer (e.g., 2E get one B free)
                     offer_count, offer_price, free_item = offer
-                    num_groups = remainder // offer_count
-                    remainder = remainder % offer_count
+                    if item != free_item:
+                        num_groups = remainder // offer_count
+                        remainder = remainder % offer_count
+                    else:
+                        num_groups = remainder // (offer_count + 1)
+                        remainder = remainder % (offer_count + 1)
                     free_item_count = num_groups  # One free item for each group
-                    if remainder - free_item_count >= 0 and item == free_item:
-                        remainder = remainder - free_item_count
+                    # if remainder - free_item_count >= 0 and item == free_item:
+                    #    remainder = remainder - free_item_count
                     total_free_item_count = item_counts.get(free_item, 0) + free_item_count
                     free_item_count_dict[free_item] = free_item_count
                     offer_best_price = min(best_price, num_groups * offer_price + offer_best_price)
