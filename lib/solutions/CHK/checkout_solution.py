@@ -12,14 +12,14 @@ def checkout(items):
     offers = {
         'A': [(5, 200), (3, 130)],  # 5A for 200, 3A for 130
         'B': [(2, 45)],             # 2B for 45
-        'E': [(2, 40, 'B')],        # 2E get one B free
-        'F': [(2, 10, 'F')],        # 2F get one F free
+        'E': [(2, 80, 'B')],        # 2E get one B free
+        'F': [(2, 20, 'F')],        # 2F get one F free
         'H': [(5, 45), (10, 80)],   # 5H for 45, 10H for 80
         'K': [(2, 120)],            # 2K for 120
-        'N': [(3, 40, 'M')],        # 3N get one M free
+        'N': [(3, 120, 'M')],        # 3N get one M free
         'P': [(5, 200)],            # 5P for 200
         'Q': [(3, 80)],             # 3Q for 80
-        'R': [(3, 50, 'Q')],        # 3R get one Q free
+        'R': [(3, 150, 'Q')],        # 3R get one Q free
         'S': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
         'T': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
         'U': [(3, 120, 'U')],       # 3U for 120
@@ -37,11 +37,15 @@ def checkout(items):
     # Count the items
     item_counts = Counter(items)
     total_cost = 0
+    free_item_count_dict = {}
     
     # Process each item
     for item, count in item_counts.items():
         if item not in prices:
             return -1  # Invalid item
+        
+        if item in free_item_count_dict:
+            count = count - free_item_count_dict[item]
         
         item_price = prices[item]
         best_price = count * item_price  # Default to no offers applied
@@ -70,6 +74,7 @@ def checkout(items):
                     if remainder - free_item_count >= 0:
                         remainder = remainder - free_item_count
                     total_free_item_count = item_counts.get(free_item, 0) + free_item_count
+                    free_item_count_dict[free_item] = free_item_count
                     offer_best_price = min(best_price, num_groups * offer_price + offer_best_price)
                     
             if offer_best_price:
