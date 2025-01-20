@@ -65,10 +65,10 @@ def checkout(skus: str):
             # No special offers.
             total += count * prices[sku]
             
-        if "B" in skus_counts:
-            available_b = skus_counts["B"]
-            skus_counts["B"] = max(0, available_b - free_b)
+    if "B" in skus_counts:
+        available_b = skus_counts["B"]
+        skus_counts["B"] = max(0, available_b - free_b)
         
-        total += skus_counts.get('B', 0) * prices["B"]
+    total += skus_counts.get('B', 0) * prices["B"]
             
-        return total
+    return total
