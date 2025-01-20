@@ -14,9 +14,6 @@ def checkout(skus: str):
         total (int): An integer representing the 
                     total price of all the items and -1 for invalid input.
     """
-    if not isinstance(skus, str):
-        # Invalid input
-        return -1
     if skus == "":
         # Empty basket
         return 0
@@ -67,14 +64,14 @@ def checkout(skus: str):
     groups_of_3 = group_total_count // 3
     total += groups_of_3 * group_discount_price
 
-    # Subtract used items from group_items
-    remaining_items = group_total_count % 3
+    # Deduct used items for group discount
+    used_count = groups_of_3 * 3
     for item, count in group_items:
-        used = min(count, groups_of_3 * 3)
-        item_counts[item] -= used
-        groups_of_3 -= used // 3
-        if groups_of_3 == 0:
+        if used_count == 0:
             break
+        used = min(count, used_count)
+        item_counts[item] -= used
+        used_count -= used
 
     # Apply other special offers
     for item, count in item_counts.items():
@@ -96,4 +93,3 @@ def checkout(skus: str):
         total += count * prices[item]
 
     return total
-
