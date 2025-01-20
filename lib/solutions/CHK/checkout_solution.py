@@ -47,6 +47,7 @@ def checkout(skus: str) -> int:
     group_items = {item: item_counts.get(item, 0) for item in group_discount}
     total_group_items = sum(group_items.values())
 
+    # Apply group discount (group of 3 for 45)
     groups_of_3 = total_group_items // 3
     total += groups_of_3 * group_discount_price
 
@@ -67,7 +68,7 @@ def checkout(skus: str) -> int:
                     while count >= offer[0]:
                         total += offer[1]
                         count -= offer[0]
-                elif isinstance(offer[1], str):  # Free item offer
+                elif isinstance(offer[1], str):  # Free item offer (e.g. 2E gets 1B free)
                     free_item = offer[1]
                     while count >= offer[0]:
                         total += offer[0] * prices[item]
