@@ -1,4 +1,4 @@
-
+from collections import Counter
 
 # noinspection PyUnusedLocal
 # skus = unicode string
@@ -14,11 +14,8 @@ def checkout(skus: str):
         total (int): An integer representing the 
                     total price of all the items and -1 for invalid input.
     """
-    if skus == "":
-        # Empty basket
-        return 0
-     
-    # Price and offers table
+   
+    # Price table and special offers
     prices = {
         'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40,
         'F': 10, 'G': 20, 'H': 10, 'I': 35, 'J': 60,
@@ -50,10 +47,7 @@ def checkout(skus: str):
         return -1
 
     # Count occurrences of each item
-    item_counts = {}
-    for item in skus:
-        item_counts[item] = item_counts.get(item, 0) + 1
-
+    item_counts = Counter(skus)
     total = 0
 
     # Apply group discount for S, T, X, Y, Z
