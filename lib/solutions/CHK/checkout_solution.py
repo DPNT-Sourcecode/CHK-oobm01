@@ -1,7 +1,5 @@
-from collections import Counter
-
 def checkout(skus: str) -> int:
-    # Price table and special offers
+    # Price table
     prices = {
         'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40,
         'F': 10, 'G': 20, 'H': 10, 'I': 35, 'J': 60,
@@ -32,24 +30,32 @@ def checkout(skus: str) -> int:
     if not isinstance(skus, str) or any(char not in prices for char in skus):
         return -1
 
-    # Count occurrences of each item
-    item_counts = Counter(skus)
+    # Initialize item counts dictionary
+    item_counts = {}
+    for item in skus:
+        if item in prices:
+            if item in item_counts:
+                item_counts[item] += 1
+            else:
+                item_counts[item] = 1
+        else:
+            return -1  # Illegal SKU
+
     total = 0
 
     # Apply group discount for S, T, X, Y, Z
-    group_items = [(item, item_counts[item]) for item in group_discount if item in item_counts]
-    group_items.sort(key=lambda x: prices[x[0]], reverse=True)  # Favor expensive items first
-    group_total_count = sum(count for _, count in group_items)
+    group_items = {item: item_counts.get(item, 0) for item in group_discount}
+    total_group_items = sum(group_items.values())
 
-    groups_of_3 = group_total_count // 3
+    groups_of_3 = total_group_items // 3
     total += groups_of_3 * group_discount_price
 
     # Deduct used items for group discount
     used_count = groups_of_3 * 3
-    for item, count in group_items:
+    for item in group_items:
         if used_count == 0:
             break
-        used = min(count, used_count)
+        used = min(group_items[item], used_count)
         item_counts[item] -= used
         used_count -= used
 
@@ -66,7 +72,7 @@ def checkout(skus: str) -> int:
                     while count >= offer[0]:
                         total += offer[0] * prices[item]
                         count -= offer[0]
-                        if free_item in item_counts:
+                        if free_item in item_counts and item_counts[free_item] > 0:
                             item_counts[free_item] = max(0, item_counts[free_item] - 1)
 
         # Add remaining items at full price
