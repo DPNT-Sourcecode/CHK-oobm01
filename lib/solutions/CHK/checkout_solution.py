@@ -67,7 +67,8 @@ def checkout(items):
                     num_groups = remainder // offer_count
                     remainder = remainder % offer_count
                     free_item_count = num_groups  # One free item for each group
-                    remainder = remainder - free_item_count
+                    if remainder - free_item_count > 0:
+                        remainder = remainder - free_item_count
                     total_free_item_count = item_counts.get(free_item, 0) + free_item_count
                     offer_best_price = min(best_price, num_groups * offer_price + offer_best_price)
                     
