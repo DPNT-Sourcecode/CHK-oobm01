@@ -21,65 +21,79 @@ def checkout(skus: str):
         # Empty basket
         return 0
      
-    # Price table
+    def checkout(skus: str) -> int:
+    # Price and offers table
     prices = {
-        'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40, 'F': 10,
-        'G': 20, 'H': 10, 'I': 35, 'J': 60, 'K': 80, 'L': 90,
-        'M': 15, 'N': 40, 'O': 10, 'P': 50, 'Q': 30, 'R': 50,
-        'S': 30, 'T': 20, 'U': 40, 'V': 50, 'W': 20, 'X': 90,
-        'Y': 10, 'Z': 50
+        'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40,
+        'F': 10, 'G': 20, 'H': 10, 'I': 35, 'J': 60,
+        'K': 70, 'L': 90, 'M': 15, 'N': 40, 'O': 10,
+        'P': 50, 'Q': 30, 'R': 50, 'S': 20, 'T': 20,
+        'U': 40, 'V': 50, 'W': 20, 'X': 17, 'Y': 20, 'Z': 21,
     }
-    
-    # Special offers
+
     offers = {
-        'A': [(5, 200), (3, 130)],  # Priority: larger bundles first
+        'A': [(5, 200), (3, 130)],
         'B': [(2, 45)],
         'H': [(10, 80), (5, 45)],
-        'K': [(2, 150)],
+        'K': [(2, 120)],
         'P': [(5, 200)],
         'Q': [(3, 80)],
-        'V': [(3, 130), (2, 90)]      
+        'V': [(3, 130), (2, 90)],
+        'E': [(2, 'B')],  # 2E gets 1B free
+        'N': [(3, 'M')],  # 3N gets 1M free
+        'R': [(3, 'Q')],  # 3R gets 1Q free
+        'U': [(4, 120)],  # 3U gets 1 free, equivalent to 4 for 120
+        'F': [(3, 20)],   # 2F gets 1 free, equivalent to 3 for 20
     }
-    
-    # Free items.
-    free_rules = {
-        'E': ('B', 2), # 2E get one B free.
-        'F': ('F', 3), # 3F get one F free.
-        'N': ('M', 3), # 3N get one M free.
-        'R': ('Q', 3), # 3R get one Q free.
-        'U': ('U', 4)  # 3U get one U free.
-    }
-    
+
+    group_discount = {'S', 'T', 'X', 'Y', 'Z'}
+    group_discount_price = 45
+
     # Check for invalid input
-    if not skus.isalpha() or not all(char in prices for char in skus):
+    if not isinstance(skus, str) or any(char not in prices for char in skus):
         return -1
 
-    # Count occurrences of each SKU using a dictionary
-    basket = {}
+    # Count occurrences of each item
+    item_counts = {}
     for item in skus:
-        basket[item] = basket.get(item, 0) + 1
+        item_counts[item] = item_counts.get(item, 0) + 1
 
     total = 0
 
-    # Apply free rules.
-    for rule_item, (free_item, threshold) in free_rules.items():
-        if rule_item in basket:
-            applicable_free = basket[rule_item] // threshold
-            if free_item in basket:
-                basket[free_item] = max(0, basket[free_item] - applicable_free)
-            else:
-                basket[free_item] = 0
-        
-    # Process each item
-    for item, count in basket.items():
-        if item in offers:
-            # Apply special offers for the item
-            for quantity, offer_price in sorted(offers[item], reverse=True):
-                num_offers = count // quantity
-                total += num_offers * offer_price
-                count %= quantity  # Remaining items after applying the offer
-        # Add remaining items at regular price
+    # Apply group discount for S, T, X, Y, Z
+    group_items = [(item, item_counts[item]) for item in group_discount if item in item_counts]
+    group_items.sort(key=lambda x: prices[x[0]], reverse=True)  # Favor expensive items first
+    group_total_count = sum(count for _, count in group_items)
+
+    groups_of_3 = group_total_count // 3
+    total += groups_of_3 * group_discount_price
+
+    # Subtract used items from group_items
+    remaining_items = group_total_count % 3
+    for item, count in group_items:
+        used = min(count, groups_of_3 * 3)
+        item_counts[item] -= used
+        groups_of_3 -= used // 3
+        if groups_of_3 == 0:
+            break
+
+    # Apply other special offers
+    for item, count in item_counts.items():
+        if count > 0 and item in offers:
+            for offer in offers[item]:
+                if isinstance(offer[1], int):  # Multi-buy discount
+                    while count >= offer[0]:
+                        total += offer[1]
+                        count -= offer[0]
+                elif isinstance(offer[1], str):  # Free item offer
+                    free_item = offer[1]
+                    while count >= offer[0]:
+                        total += offer[0] * prices[item]
+                        count -= offer[0]
+                        if free_item in item_counts:
+                            item_counts[free_item] = max(0, item_counts[free_item] - 1)
+
+        # Add remaining items at full price
         total += count * prices[item]
 
     return total
-
