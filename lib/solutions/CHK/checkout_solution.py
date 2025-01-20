@@ -14,6 +14,13 @@ def checkout(skus: str):
         total (int): An integer representing the 
                     total price of all the items and -1 for invalid input.
     """
+    if not isinstance(skus, str):
+        # Invalid input
+        return -1
+    if skus == "":
+        # Empty basket
+        return 0
+     
     # Price table
     prices = {
         'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40, 'F': 10,
@@ -75,3 +82,4 @@ def checkout(skus: str):
         total += count * prices[item]
 
     return total
+
