@@ -10,13 +10,13 @@ def checkout(skus: str) -> int:
 
     # Special offers table
     offers = {
-        'A': [(3, 130), (5, 200)],
-        'B': [(2, 45)],
-        'H': [(5, 45), (10, 80)],
-        'K': [(2, 120)],
-        'P': [(5, 200)],
-        'Q': [(3, 80)],
-        'V': [(3, 130), (2, 90)],
+        'A': [(3, 130), (5, 200)],  # 3A for 130, 5A for 200
+        'B': [(2, 45)],  # 2B for 45
+        'H': [(5, 45), (10, 80)],  # 5H for 45, 10H for 80
+        'K': [(2, 120)],  # 2K for 120
+        'P': [(5, 200)],  # 5P for 200
+        'Q': [(3, 80)],  # 3Q for 80
+        'V': [(3, 130), (2, 90)],  # 3V for 130, 2V for 90
         'E': [(2, 'B')],  # 2E get 1B free
         'N': [(3, 'M')],  # 3N get 1M free
         'R': [(3, 'Q')],  # 3R get 1Q free
@@ -36,28 +36,13 @@ def checkout(skus: str) -> int:
     item_counts = {}
     for item in skus:
         if item in prices:
-            if item in item_counts:
-                item_counts[item] += 1
-            else:
-                item_counts[item] = 1
+            item_counts[item] = item_counts.get(item, 0) + 1
         else:
             return -1  # Illegal SKU
 
-    # Handle single items like 'A' directly
-    if len(skus) == 1:
-        return prices[skus]
-
     total = 0
 
-    # Apply "2E gets 1B free" offer
-    if 'E' in item_counts and 'B' in item_counts:
-        count_E = item_counts['E']
-        count_B = item_counts['B']
-        free_B_count = count_E // 2  # Every 2 E's get 1 free B
-        total -= free_B_count * prices['B']
-        item_counts['B'] -= free_B_count  # Subtract the B's we gave for free
-
-    # Apply group discount for S, T, X, Y, Z
+    # Handle group discount for S, T, X, Y, Z
     group_items = {item: item_counts.get(item, 0) for item in group_discount_items}
     total_group_items = sum(group_items.values())
 
@@ -79,9 +64,8 @@ def checkout(skus: str) -> int:
         if count > 0 and item in offers:
             # Handle multiple offers for the item
             if item == 'A':  # For A, we need to pick the best offer
-                offer_prices = offers[item]
                 best_price = count * prices[item]  # No offer price by default
-                for offer in offer_prices:
+                for offer in offers[item]:
                     if isinstance(offer[1], int):  # Multi-buy offers
                         sets = count // offer[0]
                         remaining = count % offer[0]
