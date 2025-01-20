@@ -40,7 +40,7 @@ def checkout(skus: str):
     skus_counts = {}
     for char in skus:
         if char in skus_counts:
-            skus_counts[char] +=1
+            skus_counts[char] += 1
         else:
             skus_counts[char] = 1
     
@@ -71,8 +71,4 @@ def checkout(skus: str):
         
         total += skus_counts.get('B', 0) * prices["B"]
             
-    return total
-    
-    
-    
-
+        return total
