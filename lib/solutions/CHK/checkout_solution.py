@@ -39,8 +39,10 @@ def checkout(items):
     total_cost = 0
     free_item_count_dict = {}
     
+    sorted_items = sorted(item_counts.items(), key=lambda x: x[1], reverse=True)
+    
     # Process each item
-    for item, count in item_counts.items():
+    for item, count in sorted_items:
         if item not in prices:
             return -1  # Invalid item
         
@@ -71,7 +73,7 @@ def checkout(items):
                     num_groups = remainder // offer_count
                     remainder = remainder % offer_count
                     free_item_count = num_groups  # One free item for each group
-                    if remainder - free_item_count >= 0:
+                    if remainder - free_item_count >= 0 and item == free_item:
                         remainder = remainder - free_item_count
                     total_free_item_count = item_counts.get(free_item, 0) + free_item_count
                     free_item_count_dict[free_item] = free_item_count
