@@ -16,59 +16,55 @@ def checkout(skus: str):
     """
     # Price table
     prices = {
-        'A': 50,
-        'B': 30,
-        'C': 20,
-        'D': 15,
-        'E': 40,
-        'F': 10
+        'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40, 'F': 10,
+        'G': 20, 'H': 10, 'I': 35, 'J': 60, 'K': 80, 'L': 90,
+        'M': 15, 'N': 40, 'O': 10, 'P': 50, 'Q': 30, 'R': 50,
+        'S': 30, 'T': 20, 'U': 40, 'V': 50, 'W': 20, 'X': 90,
+        'Y': 10, 'Z': 50
     }
     
     # Special offers
     offers = {
         'A': [(5, 200), (3, 130)],  # Priority: larger bundles first
         'B': [(2, 45)],
-        'E': [],  # No direct multi-buy discounts, "2E get one B free" handled separately
-        'F': [],  # No direct multi-buy discounts, "2F get one F free" handled separately
+        'H': [(10, 80), (5, 45)],
+        'K': [(2, 150)],
+        'P': [(5, 200)],
+        'Q': [(3, 80)],
+        'V': [(3, 130), (2, 90)]      
+    }
+    
+    # Free items.
+    free_rules = {
+        'E': ('B', 2), # 2E get one B free.
+        'F': ('F', 3), # 3F get one F free.
+        'N': ('M', 3), # 3N get one M free.
+        'R': ('Q', 3), # 3R get one Q free.
+        'U': ('U', 4)  # 3U get one U free.
     }
     
     # Check for invalid input
-    if not all(char in prices for char in skus):
+    if not skus.isalpha() or not all(char in prices for char in skus):
         return -1
 
     # Count occurrences of each SKU using a dictionary
     basket = {}
     for item in skus:
-        if item in basket:
-            basket[item] += 1
-        else:
-            basket[item] = 1
+        basket[item] = basket.get(item, 0) + 1
 
     total = 0
 
-    # Apply "2E get one B free" offer
-    if 'E' in basket:
-        e_count = basket['E']
-        free_b_count = e_count // 2  # One free B for every two E
-        if 'B' in basket:
-            # Deduct free B items if they already exist
-            basket['B'] = max(0, basket['B'] - free_b_count)
-        else:
-            # Add free B items if no B is initially in the basket
-            basket['B'] = 0  # Initialize B in basket if not present
-    
-    # Apply "2F get one F free" offer
-    if 'F' in basket:
-        f_count = basket['F']
-        free_f_count = f_count // 3 # one free F for every three F
-        total += (f_count - free_f_count) * prices['F']
-        
+    # Apply free rules.
+    for rule_item, (free_item, threshold) in free_rules.items():
+        if rule_item in basket:
+            applicable_free = basket[rule_item] // threshold
+            if free_item in basket:
+                basket[free_item] = max(0, basket[free_item] - applicable_free)
+            else:
+                basket[free_item] = 0
         
     # Process each item
     for item, count in basket.items():
-        if item == 'F':
-            continue # already being handled.
-        
         if item in offers:
             # Apply special offers for the item
             for quantity, offer_price in sorted(offers[item], reverse=True):
@@ -79,3 +75,4 @@ def checkout(skus: str):
         total += count * prices[item]
 
     return total
+
