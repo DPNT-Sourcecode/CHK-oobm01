@@ -43,6 +43,15 @@ def checkout(skus: str) -> int:
 
     total = 0
 
+    # Apply "2E gets 1B free" offer
+    if 'E' in item_counts and 'B' in item_counts:
+        count_E = item_counts['E']
+        count_B = item_counts['B']
+        if count_E >= 2:
+            free_B_count = count_E // 2
+            total -= free_B_count * prices['B']
+            item_counts['B'] -= free_B_count
+
     # Apply group discount for S, T, X, Y, Z
     group_items = {item: item_counts.get(item, 0) for item in group_discount}
     total_group_items = sum(group_items.values())
