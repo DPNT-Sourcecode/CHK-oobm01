@@ -27,7 +27,8 @@ def checkout(skus: str):
     offers = {
         'A': [(5, 200), (3, 130)],  # Priority: larger bundles first
         'B': [(2, 45)],
-        'E': []  # No direct multi-buy discounts, "2E get one B free" handled separately
+        'E': [],  # No direct multi-buy discounts, "2E get one B free" handled separately
+        'F': [],  # No direct multi-buy discounts, "2F get one F free" handled separately
     }
     
     # Check for invalid input
@@ -54,10 +55,19 @@ def checkout(skus: str):
         else:
             # Add free B items if no B is initially in the basket
             basket['B'] = 0  # Initialize B in basket if not present
-        # No additional cost for free B
-
+    
+    # Apply "2F get one F free" offer
+    if 'F' in basket:
+        f_count = basket['F']
+        free_f_count = f_count // 3 # one free F for every three F
+        total += (f_count - free_f_count) * prices['F']
+        
+        
     # Process each item
     for item, count in basket.items():
+        if item == 'F':
+            continue # already being handled.
+        
         if item in offers:
             # Apply special offers for the item
             for quantity, offer_price in sorted(offers[item], reverse=True):
@@ -68,3 +78,4 @@ def checkout(skus: str):
         total += count * prices[item]
 
     return total
+
