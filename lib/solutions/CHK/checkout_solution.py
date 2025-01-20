@@ -64,11 +64,12 @@ def checkout(items):
                 
                 elif len(offer) == 3:  # Complex offer (e.g., 2E get one B free)
                     offer_count, offer_price, free_item = offer
-                    num_groups = count // offer_count
-                    remainder = count % offer_count
+                    num_groups = remainder // offer_count
+                    remainder = remainder % offer_count
                     free_item_count = num_groups  # One free item for each group
+                    remainder = remainder - free_item_count
                     total_free_item_count = item_counts.get(free_item, 0) + free_item_count
-                    best_price = min(best_price, num_groups * offer_price + remainder * item_price)
+                    offer_best_price = min(best_price, num_groups * offer_price + offer_best_price)
                     
             if offer_best_price:
                 best_price = offer_best_price + remainder * item_price
