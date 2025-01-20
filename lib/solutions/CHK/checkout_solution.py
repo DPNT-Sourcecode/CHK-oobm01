@@ -22,7 +22,7 @@ def checkout(items):
         'R': [(3, 50, 'Q')],        # 3R get one Q free
         'S': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
         'T': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
-        'U': [(3, 120)],            # 3U for 120
+        'U': [(3, 120, 'U')],       # 3U for 120
         'V': [(2, 90), (3, 130)],   # 2V for 90, 3V for 130
         'W': [(3, 45)],             # 3W for 45
         'X': [(3, 45)],             # buy any 3 of (S,T,X,Y,Z) for 45
@@ -52,13 +52,15 @@ def checkout(items):
             sorted_offers = sorted(offers[item], reverse=True, key=lambda x: x[0])
             
             # Apply largest offer first
+            offer_price = 0
+            remainder = count
             for offer in sorted_offers:
                 offer_count, offer_price = offer[:2]
                 
                 if len(offer) == 2:  # Simple offer (e.g., 3A for 130)
-                    num_groups = count // offer_count
-                    remainder = count % offer_count
-                    best_price = min(best_price, num_groups * offer_price + remainder * item_price)
+                    num_groups = remainder // offer_count
+                    remainder = remainder % offer_count
+                    offer_price = min(best_price, num_groups * offer_price + offer_price)
                 
                 elif len(offer) == 3:  # Complex offer (e.g., 2E get one B free)
                     offer_count, offer_price, free_item = offer
@@ -67,6 +69,8 @@ def checkout(items):
                     free_item_count = num_groups  # One free item for each group
                     total_free_item_count = item_counts.get(free_item, 0) + free_item_count
                     best_price = min(best_price, num_groups * offer_price + remainder * item_price)
+                    
+            best_price = offer_price
         
         # Add the best price for the item to the total cost
         total_cost += best_price
