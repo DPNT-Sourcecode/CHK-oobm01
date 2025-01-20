@@ -21,7 +21,6 @@ def checkout(skus: str):
         # Empty basket
         return 0
      
-    def checkout(skus: str) -> int:
     # Price and offers table
     prices = {
         'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40,
@@ -97,3 +96,4 @@ def checkout(skus: str):
         total += count * prices[item]
 
     return total
+
