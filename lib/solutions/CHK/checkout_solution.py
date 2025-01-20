@@ -70,21 +70,35 @@ def checkout(skus: str) -> int:
         item_counts[item] -= used
         used_count -= used
 
-    # Apply other special offers
+    # Apply special offers for each item
     for item, count in item_counts.items():
         if count > 0 and item in offers:
-            for offer in offers[item]:
-                if isinstance(offer[1], int):  # Multi-buy discount
-                    while count >= offer[0]:
-                        total += offer[1]
-                        count -= offer[0]
-                elif isinstance(offer[1], str):  # Free item offer (e.g. 2E gets 1B free)
-                    free_item = offer[1]
-                    while count >= offer[0]:
-                        total += offer[0] * prices[item]
-                        count -= offer[0]
-                        if free_item in item_counts and item_counts[free_item] > 0:
-                            item_counts[free_item] = max(0, item_counts[free_item] - 1)
+            # Handle multiple offers for the item
+            if item == 'A':  # For A, we need to pick the best offer
+                offer_prices = offers[item]
+                best_price = float('inf')
+                for offer in offer_prices:
+                    if isinstance(offer[1], int):  # Multi-buy offers
+                        # For each offer, calculate the price
+                        sets = count // offer[0]
+                        remaining = count % offer[0]
+                        price = sets * offer[1] + remaining * prices[item]
+                        best_price = min(best_price, price)
+                total += best_price
+            else:
+                # Apply other offers (e.g., 2 for price X)
+                for offer in offers[item]:
+                    if isinstance(offer[1], int):  # Multi-buy discount
+                        while count >= offer[0]:
+                            total += offer[1]
+                            count -= offer[0]
+                    elif isinstance(offer[1], str):  # Free item offer (e.g. 2E gets 1B free)
+                        free_item = offer[1]
+                        while count >= offer[0]:
+                            total += offer[0] * prices[item]
+                            count -= offer[0]
+                            if free_item in item_counts and item_counts[free_item] > 0:
+                                item_counts[free_item] = max(0, item_counts[free_item] - 1)
 
         # Add remaining items at full price
         total += count * prices[item]
