@@ -70,7 +70,8 @@ def checkout(items):
                     total_free_item_count = item_counts.get(free_item, 0) + free_item_count
                     best_price = min(best_price, num_groups * offer_price + remainder * item_price)
                     
-            best_price = offer_best_price
+            if offer_best_price:
+                best_price = offer_best_price
         
         # Add the best price for the item to the total cost
         total_cost += best_price
