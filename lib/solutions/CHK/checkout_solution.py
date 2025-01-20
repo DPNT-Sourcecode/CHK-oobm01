@@ -14,65 +14,52 @@ def checkout(skus: str):
         total (int): An integer representing the 
                     total price of all the items and -1 for invalid input.
     """
-     # Price table
+    # Price table
     prices = {
-        "A": 50,
-        "B": 30,
-        "C": 20,
-        "D": 15,
-        "E": 40
+        'A': 50,
+        'B': 30,
+        'C': 20,
+        'D': 15,
+        'E': 40
     }
     
-    # Special Offers.
-    special_offers = {
-        "A": [(3, 130), (5, 200)],
-        "B": [(2, 45)],
-        "E": [(2, "B")] # 2E, you get one B free.
+    # Special offers
+    offers = {
+        'A': [(5, 200), (3, 130)],  # Priority: larger bundles first
+        'B': [(2, 45)],
+        'E': [(2, 40)]  # "2E get one B free" handled separately
     }
     
-    # Checking valid input.
-    if not isinstance(skus, str):
+    # Check for invalid input
+    if not all(char in prices for char in skus):
         return -1
-    for char in skus:
-        if char not in prices:
-            return -1
-    
-    skus_counts = {}
-    for char in skus:
-        if char in skus_counts:
-            skus_counts[char] += 1
-        else:
-            skus_counts[char] = 1
-    
-    # Calculation of total price.
-    total = 0
-    free_b = 0
-    for sku, count in skus_counts.items():
-        if sku in special_offers:
-            # Special offers.
-            if sku == "E": # For E
-                free_b += count // 2
-                total += (count // 2) * prices["E"] * 2
-                remaining_e = count % 2
-                total += remaining_e * prices["E"]
-                
-            else:
-                for offer in sorted(special_offers[sku], key=lambda x: x[1], reverse=True):
-                    offer_count, offer_price = offer
-                    
-                    if count >= offer_count:
-                        total += (count // offer_count) * offer_price
-                        count = count % offer_count
-                total += (count % offer_count) * prices[sku]
-        else:
-            # No special offers.
-            total += count * prices[sku]
-            
-    if "B" in skus_counts:
-        available_b = skus_counts["B"]
-        skus_counts["B"] = max(0, available_b - free_b)
-        
-    total += skus_counts.get('B', 0) * prices["B"]
-            
-    return total
 
+    # Count occurrences of each SKU using a dictionary
+    basket = {}
+    for item in skus:
+        if item in basket:
+            basket[item] += 1
+        else:
+            basket[item] = 1
+
+    total = 0
+
+    # Apply "2E get one B free" offer
+    if 'E' in basket:
+        e_count = basket['E']
+        free_b_count = e_count // 2  # One free B for every two E
+        if 'B' in basket:
+            basket['B'] = max(0, basket['B'] - free_b_count)  # Deduct free B from basket
+
+    # Process each item
+    for item, count in basket.items():
+        if item in offers:
+            # Apply special offers for the item
+            for quantity, offer_price in sorted(offers[item], reverse=True):
+                num_offers = count // quantity
+                total += num_offers * offer_price
+                count %= quantity  # Remaining items after applying the offer
+        # Add remaining items at regular price
+        total += count * prices[item]
+
+    return total
