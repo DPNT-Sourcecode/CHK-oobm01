@@ -1,20 +1,6 @@
 from collections import Counter
 
-# noinspection PyUnusedLocal
-# skus = unicode string
-def checkout(skus: str):
-    """
-       Based on the pricing rules, calculates the total 
-       price of items in the basket.
-
-    Args:
-        skus (str): A string containing SKUs of all products in the basket.
-
-    Returns:
-        total (int): An integer representing the 
-                    total price of all the items and -1 for invalid input.
-    """
-   
+def checkout(skus: str) -> int:
     # Price table and special offers
     prices = {
         'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40,
