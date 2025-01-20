@@ -52,7 +52,7 @@ def checkout(skus: str):
             # Special offers.
             if sku == "E": # For E
                 free_b += count // 2
-                total += (count // 2) * prices["E"]
+                total += (count // 2) * prices["E"] * 2
                 remaining_e = count % 2
                 total += remaining_e * prices["E"]
                 
@@ -60,7 +60,7 @@ def checkout(skus: str):
                 for offer in sorted(special_offers[sku], key=lambda x: x[1], reverse=True):
                     offer_count, offer_price = offer
                     
-                    if count>=offer_count:
+                    if count >= offer_count:
                         total += (count // offer_count) * offer_price
                         count = count % offer_count
                 total += (count % offer_count) * prices[sku]
@@ -75,3 +75,4 @@ def checkout(skus: str):
     total += skus_counts.get('B', 0) * prices["B"]
             
     return total
+
