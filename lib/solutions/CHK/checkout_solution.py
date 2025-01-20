@@ -1,5 +1,5 @@
 def checkout(skus: str) -> int:
-    # Price table
+    # Price table for each item
     prices = {
         'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40,
         'F': 10, 'G': 20, 'H': 10, 'I': 35, 'J': 60,
@@ -7,23 +7,25 @@ def checkout(skus: str) -> int:
         'P': 50, 'Q': 30, 'R': 50, 'S': 20, 'T': 20,
         'U': 40, 'V': 50, 'W': 20, 'X': 17, 'Y': 20, 'Z': 21,
     }
-
+    
+    # Special offers table
     offers = {
-        'A': [(5, 200), (3, 130)],
+        'A': [(3, 130), (5, 200)],
         'B': [(2, 45)],
-        'H': [(10, 80), (5, 45)],
+        'H': [(5, 45), (10, 80)],
         'K': [(2, 120)],
         'P': [(5, 200)],
         'Q': [(3, 80)],
         'V': [(3, 130), (2, 90)],
-        'E': [(2, 'B')],  # 2E gets 1B free
-        'N': [(3, 'M')],  # 3N gets 1M free
-        'R': [(3, 'Q')],  # 3R gets 1Q free
-        'U': [(4, 120)],  # 3U gets 1 free, equivalent to 4 for 120
-        'F': [(3, 20)],   # 2F gets 1 free, equivalent to 3 for 20
+        'E': [(2, 'B')],  # 2E get 1B free
+        'N': [(3, 'M')],  # 3N get 1M free
+        'R': [(3, 'Q')],  # 3R get 1Q free
+        'U': [(3, 'U')],  # 3U get 1U free
+        'F': [(2, 'F')],  # 2F get 1F free
     }
 
-    group_discount = {'S', 'T', 'X', 'Y', 'Z'}
+    # Group discount items (S, T, X, Y, Z) for 45 each group of 3
+    group_discount_items = {'S', 'T', 'X', 'Y', 'Z'}
     group_discount_price = 45
 
     # Check for invalid input
@@ -47,13 +49,12 @@ def checkout(skus: str) -> int:
     if 'E' in item_counts and 'B' in item_counts:
         count_E = item_counts['E']
         count_B = item_counts['B']
-        if count_E >= 2:
-            free_B_count = count_E // 2
-            total -= free_B_count * prices['B']
-            item_counts['B'] -= free_B_count
+        free_B_count = count_E // 2  # Every 2 E's get 1 free B
+        total -= free_B_count * prices['B']
+        item_counts['B'] -= free_B_count  # Subtract the B's we gave for free
 
     # Apply group discount for S, T, X, Y, Z
-    group_items = {item: item_counts.get(item, 0) for item in group_discount}
+    group_items = {item: item_counts.get(item, 0) for item in group_discount_items}
     total_group_items = sum(group_items.values())
 
     # Apply group discount (group of 3 for 45)
